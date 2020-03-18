@@ -5,9 +5,11 @@ import { getToken } from '@/utils/auth'
 
 // create an axios instance
 const service = axios.create({
-  baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
-  // withCredentials: true, // send cookies when cross-domain requests
-  timeout: 5000 // request timeout
+  // baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
+  baseURL: 'http://api.leyou.com', // url = base url + request url
+  withCredentials: true, // send cookies when cross-domain requests
+  changeOrigin: true,
+  timeout: 50000 // request timeout
 })
 
 // request interceptor
@@ -17,7 +19,7 @@ service.interceptors.request.use(
 
     if (store.getters.token) {
       // let each request carry token
-      // ['X-Token'] is a custom headers key
+      // ['X-Token'] is a custom headers key    ['X-Token']是自定义标题键
       // please modify it according to the actual situation
       config.headers['X-Token'] = getToken()
     }
@@ -41,12 +43,16 @@ service.interceptors.response.use(
    * Determine the request status by custom code
    * Here is just an example
    * You can also judge the status by HTTP Status Code
+   * 通过自定义代码确定请求状态
+   * 这只是一个例子
+   * 您也可以通过HTTP状态代码来判断状态
    */
   response => {
     const res = response.data
 
     // if the custom code is not 20000, it is judged as an error.
-    if (res.code !== 20000) {
+    // 如果自定义代码不是20000，则将其判断为错误。
+    if (res.code !== 200) {
       Message({
         message: res.message || 'Error',
         type: 'error',
@@ -54,8 +60,10 @@ service.interceptors.response.use(
       })
 
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
+      // 50008：非法令牌； 50012：其他客户端登录； 50014：令牌已过期；
       if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
         // to re-login
+        // 您已注销，可以取消以保留在该页面上，或者再次登录'，'确认注销
         MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
           confirmButtonText: 'Re-Login',
           cancelButtonText: 'Cancel',

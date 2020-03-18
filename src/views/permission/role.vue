@@ -176,7 +176,7 @@ export default {
       })
         .then(async() => {
           await deleteRole(row.key)
-          this.rolesList.splice($index, 1)
+          this.List.splice($index, 1)
           this.$message({
             type: 'success',
             message: 'Delete succed!'

@@ -75,7 +75,9 @@
 
 <script>
 import { validUsername } from '@/utils/validate'
+// 第三方登陆
 import SocialSign from './components/SocialSignin'
+// import qs from 'qs'
 
 export default {
   name: 'Login',
@@ -98,7 +100,7 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: '111111'
+        password: '123456'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],

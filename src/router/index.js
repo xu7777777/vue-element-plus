@@ -170,6 +170,29 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/goods',
+    component: Layout,
+    redirect: '/goods/brand',
+    alwaysShow: true, // will always show the root menu
+    name: 'Goods',
+    meta: {
+      title: '商品管理',
+      icon: 'money',
+      roles: ['admin', 'editor'] // you can set roles in root nav
+    },
+    children: [
+      {
+        path: 'brand',
+        component: () => import('@/views/goods/brand'),
+        name: 'Goods',
+        meta: {
+          title: '品牌管理',
+          roles: ['admin'] // or you can only set roles in sub nav
+        }
+      }
+    ]
+  },
 
   {
     path: '/icon',

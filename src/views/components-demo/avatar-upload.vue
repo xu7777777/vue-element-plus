@@ -14,9 +14,9 @@
     <image-cropper
       v-show="imagecropperShow"
       :key="imagecropperKey"
-      :width="300"
-      :height="300"
-      url="https://httpbin.org/post"
+      :width="50"
+      :height="50"
+      url="http://api.leyou.com/dev-api/upload/image"
       lang-type="en"
       @close="close"
       @crop-upload-success="cropSuccess"

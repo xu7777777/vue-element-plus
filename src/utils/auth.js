@@ -1,5 +1,7 @@
 import Cookies from 'js-cookie'
+// 已封装好的cookie对象
 
+// token的键
 const TokenKey = 'Admin-Token'
 
 export function getToken() {

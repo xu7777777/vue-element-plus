@@ -746,9 +746,15 @@ export default {
         height / scale
       )
       this.createImgUrl = canvas.toDataURL(mime)
+      console.log(this.createImgUrl)
     },
     prepareUpload() {
       const { url, createImgUrl, field, ki } = this
+      console.log(url + 'usl')
+      console.log(createImgUrl + 'createImgUrl')
+      console.log(field + 'field')
+      console.log(ki + 'ki')
+
       this.$emit('crop-success', createImgUrl, field, ki)
       if (typeof url === 'string' && url) {
         this.upload()
@@ -793,7 +799,7 @@ export default {
       request({
         url,
         method: 'post',
-        data: fmData
+        file: fmData
       })
         .then(resData => {
           this.loading = 2
