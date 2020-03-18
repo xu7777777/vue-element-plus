@@ -209,12 +209,6 @@ export default {
 
       if (isEdit) {
         await updateRole(this.role.key, this.role)
-        for (let index = 0; index < this.rolesList.length; index++) {
-          if (this.rolesList[index].key === this.role.key) {
-            this.rolesList.splice(index, 1, Object.assign({}, this.role))
-            break
-          }
-        }
       } else {
         const { data } = await addRole(this.role)
         this.role.key = data.key
