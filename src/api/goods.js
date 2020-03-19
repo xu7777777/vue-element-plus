@@ -11,7 +11,6 @@ export function getBrands(pageParams) {
 
 export function addBrand(data) {
   data = qs.stringify(data)
-  console.log(data)
   return request({
     url: '/dev-api/brands/add',
     method: 'post',
@@ -31,6 +30,38 @@ export function updateBrand(data) {
 export function deleteBrand(id) {
   return request({
     url: `/dev-api/brands/del/${id}`,
+    method: 'get'
+  })
+}
+
+export function getCategories(cid) {
+  return request({
+    url: `/dev-api/category/list?cid=` + cid,
+    method: 'get'
+  })
+}
+
+export function addCategory(data) {
+  data = qs.stringify(data)
+  return request({
+    url: '/dev-api/category/add',
+    method: 'post',
+    data
+  })
+}
+
+export function updateCategory(data) {
+  data = qs.stringify(data)
+  return request({
+    url: `/dev-api/category/update/`,
+    method: 'post',
+    data
+  })
+}
+
+export function deleteCategory(id) {
+  return request({
+    url: `/dev-api/category/del/${id}`,
     method: 'get'
   })
 }

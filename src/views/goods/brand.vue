@@ -198,9 +198,9 @@ export default {
         title: 'Success',
         dangerouslyUseHTMLString: true,
         message: `
-            <div>Brand Id: ${brandId}</div>
-            <div>Brand Name: ${name}</div>
-            <div>Brand Heat: ${heat}</div>
+            <div>Brand Id: <div class="i-style">${brandId}</div></div>
+            <div>Brand Name: <div class="i-style">${name}</div></div>
+            <div>Brand Heat: <div class="i-style">${heat}</div></div>
           `,
         type: 'success'
       })
@@ -268,5 +268,10 @@ export default {
     font-weight: 700;
     background-color: rgba(255,50,2,.3);
     border: 1px deeppink solid;
+  }
+  .i-style {
+    font-weight: 600;
+    font-size: 14px;
+    color: #002742;
   }
 </style>
