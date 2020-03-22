@@ -65,3 +65,28 @@ export function deleteCategory(id) {
     method: 'get'
   })
 }
+
+export function getCategory(cid) {
+  return request({
+    url: `/dev-api/category/get/` + cid,
+    method: 'get'
+  })
+}
+
+export function getCyByBid(bid) {
+  return request({
+    url: `/dev-api/category/categories/` + bid,
+    method: 'get'
+  })
+}
+
+export function getHeats(title) {
+  if (typeof title === 'undefined') {
+    title = ''
+  }
+  return request({
+    url: `/dev-api/heat/get?title=` + title,
+    method: 'get'
+  })
+}
+

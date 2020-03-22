@@ -183,6 +183,15 @@ export const asyncRoutes = [
     },
     children: [
       {
+        path: 'brandheat',
+        component: () => import('@/views/goods/brandheat'),
+        name: 'Goods',
+        meta: {
+          title: '品牌热度',
+          roles: ['admin', 'editor']
+        }
+      },
+      {
         path: 'brand',
         component: () => import('@/views/goods/brand'),
         name: 'Goods',
