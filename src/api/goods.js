@@ -1,10 +1,18 @@
+// import { getToken } from '@/utils/auth' // get token from cookie
 import request from '@/utils/request'
 import qs from 'qs'
 
+// function for brand
 export function getBrands(pageParams) {
   pageParams = qs.stringify(pageParams)
   return request({
     url: '/dev-api/brands/list?' + pageParams,
+    method: 'get'
+  })
+}
+export function getBrandsByCId(cid) {
+  return request({
+    url: `/dev-api/brands/getBrands/${cid}`,
     method: 'get'
   })
 }
@@ -34,6 +42,7 @@ export function deleteBrand(id) {
   })
 }
 
+// function for category
 export function getCategories(cid) {
   return request({
     url: `/dev-api/category/list?cid=` + cid,
@@ -80,6 +89,7 @@ export function getCyByBid(bid) {
   })
 }
 
+// function for heat
 export function getHeats(title) {
   if (typeof title === 'undefined') {
     title = ''
