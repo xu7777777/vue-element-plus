@@ -2,6 +2,19 @@
 import request from '@/utils/request'
 import qs from 'qs'
 
+// add product
+export function addPro2Goods(data) {
+  data.ownSpec = JSON.stringify(data.ownSpec)
+  console.log(data.ownSpec + '   11231231231')
+  data = qs.stringify(data)
+  console.log(data)
+  return request({
+    url: '/dev-api/product/add',
+    method: 'post',
+    data
+  })
+}
+
 // function for brand
 export function getBrands(pageParams) {
   pageParams = qs.stringify(pageParams)
@@ -46,6 +59,12 @@ export function deleteBrand(id) {
 export function getCategories(cid) {
   return request({
     url: `/dev-api/category/list?cid=` + cid,
+    method: 'get'
+  })
+}
+export function getParams(cid, isGeneric) {
+  return request({
+    url: `/dev-api/category/params?cid=` + cid + '&isGeneric=' + isGeneric,
     method: 'get'
   })
 }
@@ -100,3 +119,11 @@ export function getHeats(title) {
   })
 }
 
+// function for goods
+export function getGoods(pageParams) {
+  pageParams = qs.stringify(pageParams)
+  return request({
+    url: '/dev-api/goods/list?' + pageParams,
+    method: 'get'
+  })
+}
