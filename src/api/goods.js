@@ -6,7 +6,6 @@ import qs from 'qs'
 export function addPro2Goods(data) {
   data.ownSpec = JSON.stringify(data.ownSpec)
   data = qs.stringify(data)
-  console.log(data)
   return request({
     url: '/dev-api/product/add',
     method: 'post',

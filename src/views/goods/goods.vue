@@ -36,7 +36,7 @@
       >
         Search
       </el-button>
-      <el-button type="primary">New Goods</el-button>
+      <el-button type="primary" @click="addGoods">New Goods</el-button>
     </div>
     <div class="container-box">
       <el-table
@@ -98,7 +98,7 @@
                 type="warning"
                 icon="el-icon-edit"
                 circle
-                @click="updateBrand(scope)"
+                @click="updateGoods(scope)"
               />
             </el-tooltip>
             <el-tooltip content="上架" placement="top">
@@ -113,7 +113,6 @@
                 type="danger"
                 icon="el-icon-download"
                 circle
-                @click="deleteBrand(scope)"
               />
             </el-tooltip>
             <el-tooltip content="添加产品" placement="top">
@@ -296,9 +295,10 @@
           <el-step title="商品描述" :status="stepStatus[1]" />
           <el-step title="规格参数" :status="stepStatus[2]" />
         </el-steps>
-        <el-form v-show="Valid[0]" ref="spuContent" :model="spuContent" :inline="true" label-width="80px" style="min-width: 840px;padding-left: 60px;">
+        <el-form v-show="Valid[0]" ref="spuContent" :model="spuContent" :rules="proFromRule" :inline="true" label-width="80px" style="min-width: 840px;padding-left: 60px;">
           <el-form-item label="商品分类" style="margin: 30px;" prop="category">
             <el-cascader
+              v-model="spuContent.cid3"
               placeholder="请选择分类"
               :props="props"
               :show-all-levels="false"
@@ -396,8 +396,7 @@
 
 <script>
 
-import { addPro2Goods, getGoods, addBrand, updateBrand, deleteBrand, getCategories, getCyByBid, getCategory, getBrandsByCId, getParams, getProducts, modPro2Goods, delProduct } from '@/api/goods'
-import { deepClone } from '@/utils'
+import { addPro2Goods, getGoods, getCategories, getCategory, getBrandsByCId, getParams, getProducts, modPro2Goods, delProduct } from '@/api/goods'
 import { quillEditor } from 'vue-quill-editor' // 调用富文本编辑器
 import 'quill/dist/quill.snow.css' // 富文本编辑器外部引用样式  三种样式三选一引入即可
 // import 'quill/dist/quill.core.css'
@@ -455,15 +454,77 @@ export default {
       }
     }
     return {
-      // 弹窗
+      // ---- 内容弹窗 ----
+      saleable: '', // 选择器文本
+      staOptions: [{ // 上下架选择器
+        value: '-1',
+        label: '下架'
+      }, {
+        value: '1',
+        label: '上架'
+      }],
+      active: 0, // 当前step
       dialogImageUrl: '',
+      // ---- step 1 ----
+      // rulesForm: {// 文本规则
+      //   category: [
+      //     { required: true, message: '请输入产品标题！', trigger: 'blur' }
+      //   ],
+      //   brand: [
+      //     { required: true, message: '请输入产品标题！', trigger: 'blur' }
+      //   ],
+      //   title: [
+      //     { required: true, message: '请输入商品标题', trigger: 'blur' },
+      //     { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
+      //   ]
+      // },
+      // ---- 产品详情 ----
+      productList: [],
+      canMod: true, // 能否提交修改
+      tmpPid: '', // 产品ID
+      proForm: { // 产品提交表单
+        title: '',
+        price: '',
+        images: [],
+        ownSpec: [],
+        goodsId: ''
+      },
+      goodsId: '',
+      isAddInfo: false,
+      imageUrl: '', // ？
+      uploadImages: [], // 暂存上传后的图片链接
+      productCards: [], // 产品卡片列表
       innerdialogVisible2Mod: false,
       innerdialogVisible2Add: false,
-      multipleSelection: [],
-      // 富文本编辑器对象
-      editor: null,
-      //  富文本编辑器配置
-      editorOption: {
+      multipleSelection: [], // ？
+      proFromRule: {// 产品验证规则
+        title: [
+          { required: true, message: '请输入产品标题！', trigger: 'blur' }
+        ],
+        price: [
+          { validator: validatePrice, required: true, trigger: 'blur' }
+        ]
+      },
+      // -------- 添加或编辑 -------
+      Valid: [true, false, false], // 窗口展示
+      stepStatus: ['wait', 'wait', 'wait'],
+      preDisable: true, // 锁定上一步按钮
+      brands: [],
+      genParam: [], // 当前商品的普通规格参数
+      specParam: [], // 当前商品的特殊规格参数
+      spuContent: { // 添加或编辑表单
+        cid3: '',
+        brandId: '',
+        title: '',
+        subTitle: '',
+        packingList: '',
+        afterService: '',
+        description: '',
+        genericSpec: {}
+      },
+      // ---- 富文本编辑 ----
+      editor: null, // 富文本编辑器对象
+      editorOption: { // 富文本编辑器配置
         modules: {
           toolbar: {
             container: toolbarOptions, // 工具栏
@@ -480,106 +541,22 @@ export default {
           }
         }
       },
+      // ---- 搜索 ----
       idOrTitle: '',
       brandName: '',
       categoryName: '',
-      productCards: [],
-      // for addInfo
-      goodsId: '',
-      isAddInfo: false,
-      imageUrl: '',
-      uploadImages: [], // 暂存上传后的图片链接
-      // for form
-      Valid: [true, false, false],
-      stepStatus: ['wait', 'wait', 'wait'],
-      preDisable: true,
-      // for form 1
-      brands: [],
-      inputBrandTitle: '',
-      spuContent: {
-        cid3: '',
-        brandId: '',
-        title: '',
-        subTitle: '',
-        packingList: '',
-        afterService: '',
-        description: '',
-        genericSpec: {}
-      },
-      specialContent: [],
-      specTags: [],
-      inputVal: '',
-      genParam: [],
-      specParam: [],
-      productList: [],
-      canMod: true,
-      tmpPid: '',
-      proForm: {
-        title: '',
-        price: '',
-        images: [],
-        ownSpec: [],
-        goodsId: ''
-      },
-      rulesForm: {
-        category: [
-          { required: true, trigger: 'blur' }
-        ],
-        brand: [
-          { required: true, trigger: 'blur' }
-        ],
-        goodsTitle: [
-          { required: true, message: '请输入商品标题', trigger: 'blur' },
-          { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
-        ]
-      },
-      proFromRule: {
-        title: [
-          { required: true, message: '请输入产品标题！', trigger: 'blur' }
-        ],
-        price: [
-          { validator: validatePrice, required: true, trigger: 'blur' }
-        ]
-      },
-      // for step
-      active: 0,
-      // for select
-      saleable: '',
-      staOptions: [{
-        value: '-1',
-        label: '下架'
-      }, {
-        value: '1',
-        label: '上架'
-      }],
+      current: 1,
+      size: 10,
+      total: 0,
       // basic
       pageSize: [5, 10, 20, 100],
       isdisable: false,
-      limitNum: 1,
       brand: Object.assign({}, defaultBrand),
       list: null,
       listLoading: true,
       downloadLoading: false,
       dialogVisible: false,
       dialogType: 'New Goods',
-      current: 1,
-      size: 10,
-      total: 0,
-      text: null,
-      rules: {
-        name: [
-          { required: true, message: '请输入品牌名称', trigger: 'blur' },
-          { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
-        ]
-      },
-      // for category tag
-      ids: [],
-      tagContext: '',
-      categoryList: [],
-      node: null,
-      dynamicTags: [],
-      inputVisible: false,
-      inputValue: '',
       props: {
         lazy: true,
         lazyLoad(node, resolve) {
@@ -656,14 +633,6 @@ export default {
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
-    },
-    // add tag
-    addTag(item, id, value, unit) {
-      if (value === '' || value === undefined) {
-        return
-      }
-      this.specialContent.push({ id: id, value: value })
-      item.content.push({ specId: id, name: value + ' ' + unit })
     },
     handleSuccess(res) {
       // 获取富文本组件实例
@@ -770,98 +739,13 @@ export default {
       this.total = data.totalCount
       this.listLoading = false
     },
-    addBrand() {
-      this.brand = Object.assign({}, defaultBrand)
+    addGoods() {
       this.dialogType = 'New Goods'
       this.dialogVisible = true
-      this.dynamicTags = []
     },
-    deleteBrand({ $index, row }) {
-      this.$confirm('确定要删除该品牌吗? 如果删除该品牌，则该品牌下所有商品都将被删除!', 'Warning', {
-        confirmButtonText: 'Confirm',
-        cancelButtonText: 'Cancel',
-        type: 'warning'
-      })
-        .then(async() => {
-          await deleteBrand(row.brandId)
-          this.getBrands()
-          this.$message({
-            type: 'success',
-            message: 'Delete succed!'
-          })
-        })
-        .catch(err => {
-          console.error(err)
-        })
-    },
-    updateBrand(scope) {
-      this.ids = []
-      this.dynamicTags = []
+    updateGoods(scope) {
       this.dialogType = 'Edit Goods'
       this.dialogVisible = true
-      this.brand = deepClone(scope.row)
-      getCyByBid(this.brand.id).then(({ data }) => {
-        if (data != null) {
-          for (let index = 0; index < data.length; index++) {
-            const item = {
-              id: data[index].id,
-              label: data[index].label
-            }
-            this.ids.push(item.id)
-            this.dynamicTags.push(item)
-          }
-        }
-      })
-    },
-    async confirmBrand() {
-      let isSucced = false
-      if (this.ids.length > 0) {
-        this.isdisable = true
-        const isEdit = this.dialogType === 'edit'
-        Object.assign(this.brand, { ids: this.ids })
-        if (isEdit) {
-          await updateBrand(this.brand).then(() => {
-            isSucced = true
-            for (let index = 0; index < this.list.length; index++) {
-              if (this.list[index].brandId === this.brand.brandId) {
-                this.list.splice(index, 1, Object.assign({}, this.brand))
-                break
-              }
-            }
-          }).catch(() => {
-            this.isdisable = false
-          })
-        } else {
-          await addBrand(this.brand).then((resp) => {
-            this.brand.brandId = resp.data
-            isSucced = true
-          }).catch(() => {
-            this.isdisable = false
-          })
-          this.getBrands()
-        }
-        const { brandId, name, heat } = this.brand
-        this.dialogVisible = false
-        this.clearCascader = false
-        this.ids = []
-        if (isSucced) {
-          this.$notify({
-            title: 'Success',
-            dangerouslyUseHTMLString: true,
-            message: `
-                <div>Brand Id: <i class="i-style">${brandId}</i></div>
-                <div>Brand Name: <i class="i-style">${name}</i></div>
-                <div>Brand Heat: <i class="i-style">${heat}</i></div>
-              `,
-            type: 'success'
-          })
-        }
-      } else {
-        this.$notify.warning({
-          title: '警告',
-          message: '品牌中至少存在一个类目！'
-        })
-      }
     },
     // 上传文件之前的钩子
     handleBeforeUpload(file) {
