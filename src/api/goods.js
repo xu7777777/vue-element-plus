@@ -2,16 +2,39 @@
 import request from '@/utils/request'
 import qs from 'qs'
 
-// add product
+// product
 export function addPro2Goods(data) {
   data.ownSpec = JSON.stringify(data.ownSpec)
-  console.log(data.ownSpec + '   11231231231')
   data = qs.stringify(data)
   console.log(data)
   return request({
     url: '/dev-api/product/add',
     method: 'post',
     data
+  })
+}
+
+export function delProduct(pid) {
+  return request({
+    url: '/dev-api/product/del?pid=' + pid,
+    method: 'get'
+  })
+}
+
+export function modPro2Goods(data) {
+  data.ownSpec = JSON.stringify(data.ownSpec)
+  data = qs.stringify(data)
+  return request({
+    url: '/dev-api/product/mod',
+    method: 'post',
+    data
+  })
+}
+
+export function getProducts(goodsId) {
+  return request({
+    url: '/dev-api/product/list?goodsId=' + goodsId,
+    method: 'get'
   })
 }
 
